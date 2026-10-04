@@ -1,0 +1,176 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@theme {
+  /* NammaRoute cinematic palette: calm blue-gray surfaces, navy ink, turquoise interaction */
+  --color-ink-950: #101827;
+  --color-ink-900: #182234;
+  --color-ink-800: #263346;
+  --color-ink-700: #5B6874; /* secondary text, darkened from #687580 to pass AA on the surfaces */
+  --color-ink-500: #94A1AA; /* muted text */
+  --color-surface-0: #E8EEF1;
+  --color-surface-50: #DDE6EA;
+  --color-surface-100: #F4F7F8;
+  --color-surface-glass: rgba(255, 255, 255, 0.72);
+  --color-primary: #20D6C7;
+  --color-line-teal-600: #0B8A80; /* readable teal for text, borders and dark fills */
+  --color-line-teal-500: #12A99C;
+  --color-line-teal-400: #20D6C7;
+  --color-line-amber-500: #B7822B;
+  --color-line-blue-500: #3B6E9E;
+  --color-line-rose-500: #B4574A;
+  --color-ok-600: #2F7A55;
+  --color-warn-600: #B4574A;
+
+  --font-display: "Manrope", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
+  --radius-card: 24px;
+  --radius-chip: 999px;
+  --radius-sheet: 32px;
+  --shadow-soft: 0 18px 50px -18px rgba(16, 24, 39, 0.28);
+}
+
+:root { color-scheme: light; }
+* { -webkit-tap-highlight-color: transparent; }
+html, body, #root { height: 100%; }
+
+body {
+  background: linear-gradient(160deg, #F4F7F8 0%, #E8EEF1 45%, #DDE6EA 100%) fixed;
+  color: var(--color-ink-950);
+  font-family: var(--font-body);
+  overscroll-behavior-y: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.large-text { font-size: 1.14em; }
+.high-contrast { --color-surface-0: #ffffff; --color-surface-50: #f0f0f0; --color-ink-950: #000000; }
+.high-contrast .glass-surface { background-color: #ffffff !important; border-color: #000000 !important; }
+::selection { background-color: var(--color-primary); color: var(--color-ink-950); }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Glass is reserved for surfaces that float over maps, imagery or content. */
+.glass-surface {
+  background-color: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: var(--shadow-soft);
+}
+.soft-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow-soft);
+}
+
+:focus-visible { outline: 3px solid var(--color-primary); outline-offset: 2px; }
+
+/* Voice: one calm pulse while listening */
+@keyframes mic-ring { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(1.9); opacity: 0; } }
+.mic-ring { animation: mic-ring 1.6s ease-out infinite; }
+
+/* Map: calmer imagery and glass controls */
+.maplibregl-canvas { filter: saturate(0.82) contrast(0.98); }
+.maplibregl-ctrl-group {
+  border-radius: 18px !important; overflow: hidden;
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(18px); box-shadow: var(--shadow-soft) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+}
+.maplibregl-popup-content { border-radius: 16px; font-family: var(--font-body); box-shadow: var(--shadow-soft); }
+
+.route-bubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  color: #101827;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 8px 20px -6px rgba(16, 24, 39, 0.35);
+  cursor: pointer;
+  z-index: 1;
+}
+.route-bubble.selected {
+  background: #101827;
+  color: #fff;
+  border-color: #20D6C7;
+  z-index: 3;
+}
+.poi-marker {
+  display: flex;
+  height: 28px;
+  width: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2px solid #20D6C7;
+  font-size: 14px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+/* Hero motion */
+@keyframes hs-train { from { transform: translateX(-420px); } to { transform: translateX(860px); } }
+@keyframes hs-drift { from { transform: translateX(0); } to { transform: translateX(-40px); } }
+@keyframes hs-twinkle { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
+@keyframes hs-streak { from { transform: translateX(-160px); } to { transform: translateX(900px); } }
+@keyframes hs-sun { 0%, 100% { opacity: .22; } 50% { opacity: .38; } }
+.hs-train { animation: hs-train 16s linear infinite; }
+.hs-far { animation: hs-drift 30s linear infinite alternate; }
+.hs-near { animation: hs-drift 18s linear infinite alternate-reverse; }
+.hs-window { animation: hs-twinkle 5s ease-in-out infinite; }
+.hs-streak { animation: hs-streak 7s linear infinite; }
+.hs-streak-2 { animation-duration: 10s; animation-delay: -4s; }
+.hs-sun { animation: hs-sun 8s ease-in-out infinite; }
+.hero-text { text-shadow: 0 2px 14px rgba(8, 14, 26, 0.75); }
+
+.turn-marker {
+  display: flex; height: 22px; width: 22px; align-items: center; justify-content: center;
+  border-radius: 9999px; background: #101827; color: #20D6C7; border: 2px solid #fff;
+  box-shadow: 0 4px 10px rgba(16, 24, 39, 0.4); cursor: pointer;
+}
+.pin-origin {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 4px solid #101827;
+  box-shadow: 0 0 0 3px #fff, 0 6px 14px rgba(16,24,39,.35);
+}
+.pin-dest svg {
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+.you-dot {
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #20D6C7;
+  border: 3px solid #fff;
+  animation: you-pulse 1.6s infinite;
+}
+@keyframes you-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(32, 214, 199, 0.55); }
+  70% { box-shadow: 0 0 0 14px rgba(32, 214, 199, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(32, 214, 199, 0); }
+}
+
+/* Guardian Mode: bigger touch targets and clearer focus everywhere (applied with the existing large-text/high-contrast preset). */
+.guardian-ui button, .guardian-ui a[class*="rounded-full"], .guardian-ui select, .guardian-ui input { min-height: 48px; }
+.guardian-ui :focus-visible { outline: 4px solid #0B3D91; outline-offset: 2px; }

@@ -31,7 +31,13 @@ export function readCookies(req: Request): Record<string, string> {
 }
 
 export function setCookie(res: Response, name: string, value: string, maxAgeSec: number): void {
-  const attrs = [`${name}=${encodeURIComponent(value)}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${maxAgeSec}`]
+  const attrs = [
+  `${name}=${encodeURIComponent(value)}`,
+  'Path=/',
+  'HttpOnly',
+  'SameSite=None',
+  `Max-Age=${maxAgeSec}`,
+]
   if (isProd) attrs.push('Secure')
   res.append('Set-Cookie', attrs.join('; '))
 }
@@ -88,7 +94,11 @@ export function originGuard(req: Request, res: Response, next: NextFunction): vo
   if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS') return next()
   const origin = req.headers.origin
   if (origin) {
-    const allowed = new Set([config.publicUrl, config.appUrl])
+    const allowed = new Set([
+  config.publicUrl,
+  config.appUrl,
+  process.env.FRONTEND_URL,
+].filter(Boolean))
     // Same-origin requests (Host header match) are always fine.
     const sameHost = (() => {
       try {

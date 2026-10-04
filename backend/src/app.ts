@@ -8,9 +8,16 @@ import { originGuard } from './http.ts'
 import { reportsRouter } from './reports.ts'
 import { ridesRouter } from './rides.ts'
 import { transitRouter } from './transit.ts'
+import cors from 'cors' 
 
 export function createApp() {
   const app = express()
+  app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+)
   if (process.env.TRUST_PROXY) app.set('trust proxy', Number(process.env.TRUST_PROXY) || process.env.TRUST_PROXY)
   app.disable('x-powered-by')
   app.use(

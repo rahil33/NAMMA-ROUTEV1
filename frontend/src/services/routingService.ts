@@ -43,7 +43,7 @@ class AppRoutingService implements RoutingService {
       if (cached) return this.finish(cached, params)
     }
 
-    let journeys: Journey[] | null = null
+    let journeys: Journey[] = []
     let notice: string | undefined
     const status = await transitStatus()
     if (status?.planner === 'otp') {
